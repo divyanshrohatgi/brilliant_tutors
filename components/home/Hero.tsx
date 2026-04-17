@@ -1,15 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import Fade from "embla-carousel-fade";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const ease = "easeOut" as const;
+
+const CDN = "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_900/brilliant-tutors";
+const slides = [
+  { src: `${CDN}/slideshow1`, alt: "Celebrating excellence — Brilliant Tutors Academy" },
+  { src: `${CDN}/slideshow2`, alt: "Student success at Brilliant Tutors Academy" },
+  { src: `${CDN}/slideshow3`, alt: "Award ceremony at Brilliant Tutors Academy" },
+  { src: `${CDN}/slideshow4`, alt: "Class session at Brilliant Tutors Academy" },
+];
 
 export function Hero() {
   return (
     <section
       className="relative overflow-hidden text-primary-foreground"
-      style={{ background: "linear-gradient(135deg, #1b2b4b 0%, #243660 60%, #1e3a5f 100%)" }}
+      style={{ background: "linear-gradient(135deg, #1A3EBF 0%, #1535A8 60%, #122D91 100%)" }}
     >
       {/* Subtle background circles */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -17,14 +30,9 @@ export function Hero() {
         <div className="absolute bottom-0 -left-24 w-[400px] h-[400px] rounded-full opacity-5" style={{ background: "radial-gradient(circle, #f5a623 0%, transparent 70%)" }} />
       </div>
 
-      {/* Left-column background photo — desktop only, clipped to left half */}
-      <div className="hidden lg:block absolute inset-y-0 left-0 w-1/2 overflow-hidden pointer-events-none" aria-hidden="true">
-        <img src="/images/hero-bg.svg" alt="" className="w-full h-full object-cover object-center" style={{ opacity: 0.13 }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, transparent 55%, #1e3a5f 100%)" }} />
-      </div>
-
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left column */}
           <div>
             <motion.p
               initial={{ y: 24, opacity: 0 }}
@@ -77,14 +85,6 @@ export function Hero() {
               </Link>
             </motion.div>
 
-            {/* Decorative arrow pointing toward sessions card — desktop only */}
-            <div className="hidden lg:block absolute top-[58%] right-[calc(50%-24px)] pointer-events-none" aria-hidden="true">
-              <svg width="72" height="52" viewBox="0 0 72 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 46 C18 38, 38 20, 64 6" stroke="#f5a623" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.7" />
-                <path d="M58 4 L64 6 L60 12" stroke="#f5a623" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.7" />
-              </svg>
-            </div>
-
             <motion.div
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -105,39 +105,14 @@ export function Hero() {
             </motion.div>
           </div>
 
+          {/* Right column — slideshow */}
           <motion.div
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.25, ease }}
             className="hidden lg:block"
           >
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <p className="text-accent font-semibold text-xs uppercase tracking-widest mb-5">
-                Upcoming sessions
-              </p>
-              <ul className="space-y-4" role="list">
-                {upcomingSessions.map((s) => (
-                  <li
-                    key={s.label}
-                    className="flex items-start gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0"
-                  >
-                    <span className="bg-accent/20 text-accent rounded-lg px-2.5 py-1 text-xs font-bold shrink-0">
-                      {s.tag}
-                    </span>
-                    <div>
-                      <p className="font-semibold text-sm">{s.label}</p>
-                      <p className="text-primary-foreground/60 text-xs mt-0.5">{s.detail}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/shop"
-                className="mt-6 block text-center text-sm font-semibold text-accent hover:underline underline-offset-4"
-              >
-                See all available places →
-              </Link>
-            </div>
+            <HeroSlideshow />
           </motion.div>
         </div>
       </div>
@@ -154,9 +129,71 @@ export function Hero() {
   );
 }
 
-const upcomingSessions = [
-  { tag: "Year 5", label: "11+ Intensive — Earley Centre", detail: "Saturdays · 9am–12pm · from £180" },
-  { tag: "Year 4", label: "Weekly Tuition — Caversham", detail: "Thursdays · 4pm–6pm · from £120/month" },
-  { tag: "GCSE", label: "Maths Booster — Reading", detail: "Sundays · 10am–1pm · from £150" },
-  { tag: "Mock", label: "GL Mock Exam — Slough Centre", detail: "Sat 14 June · All day · £45" },
-];
+function HeroSlideshow() {
+  const autoplay = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Fade(), autoplay.current]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setActiveIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on("select", onSelect);
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi, onSelect]);
+
+  return (
+    <div className="select-none">
+      {/* Carousel */}
+      <div
+        ref={emblaRef}
+        className="overflow-hidden rounded-2xl"
+        onMouseEnter={() => autoplay.current.stop()}
+        onMouseLeave={() => autoplay.current.play()}
+      >
+        <div className="flex">
+          {slides.map((slide, i) => (
+            <div
+              key={i}
+              className="flex-[0_0_100%] min-w-0 relative"
+              style={{ aspectRatio: "4/3" }}
+            >
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                className="object-cover rounded-2xl"
+                priority={i === 0}
+                loading={i === 0 ? "eager" : "lazy"}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 mt-4" role="tablist" aria-label="Slideshow navigation">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            role="tab"
+            aria-selected={i === activeIndex}
+            aria-label={`Slide ${i + 1}`}
+            onClick={() => emblaApi?.scrollTo(i)}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: 6,
+              height: 6,
+              background: i === activeIndex ? "#f5a623" : "#ffffff40",
+              transform: i === activeIndex ? "scale(1.4)" : "scale(1)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

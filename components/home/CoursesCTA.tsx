@@ -61,7 +61,7 @@ const cards = [
 
 export function CoursesCTA() {
   return (
-    <section className="py-20 bg-white" aria-labelledby="courses-cta-heading">
+    <section className="py-20" style={{ background: "#FAF7F2" }} aria-labelledby="courses-cta-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <p className="text-accent font-semibold text-xs uppercase tracking-widest mb-3">Programmes</p>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
+import { resend, FROM_ADDRESS, paymentReceiptEmail } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -24,7 +25,10 @@ export async function POST(req: NextRequest) {
 
     const order = await db.order.findUnique({
       where: { stripeSessionId: session.id },
-      include: { items: true },
+      include: {
+        items: { include: { product: true, variant: true } },
+        user: true,
+      },
     });
 
     if (!order) {
@@ -32,7 +36,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // Idempotency check
     if (order.status === "PAID") {
       return NextResponse.json({ ok: true });
     }
@@ -43,7 +46,6 @@ export async function POST(req: NextRequest) {
         data: { status: "PAID" },
       });
 
-      // Create bookings for each order item
       for (const item of order.items) {
         await tx.booking.create({
           data: {
@@ -56,7 +58,6 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        // Decrement stock
         if (item.variantId) {
           await tx.productVariant.update({
             where: { id: item.variantId },
@@ -65,7 +66,6 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Increment promo code usage
       if (order.promoCodeId) {
         await tx.promoCode.update({
           where: { id: order.promoCodeId },
@@ -73,12 +73,37 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // Clear the cart
       const cart = await tx.cart.findFirst({ where: { userId: order.userId } });
       if (cart) {
         await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
       }
     });
+
+    // Send receipt email
+    const customerEmail = order.user?.email ?? session.customer_details?.email;
+    const firstName = order.user?.name?.split(" ")[0] ?? session.customer_details?.name?.split(" ")[0] ?? "there";
+
+    if (customerEmail) {
+      const receipt = paymentReceiptEmail({
+        firstName,
+        orderId: order.id,
+        items: order.items.map((item) => ({
+          name: item.product.name,
+          variant: item.variant?.name ?? null,
+          quantity: item.quantity,
+          price: item.unitPrice,
+        })),
+        total: order.total,
+      });
+
+      await resend.emails.send({
+        from: FROM_ADDRESS,
+        to: customerEmail,
+        subject: "Your booking is confirmed — Brilliant Tutors Academy",
+        html: receipt.html,
+        text: receipt.text,
+      }).catch((err) => console.error("[stripe-webhook] Failed to send receipt:", err));
+    }
   }
 
   return NextResponse.json({ ok: true });

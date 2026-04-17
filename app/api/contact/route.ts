@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { resend, FROM_ADDRESS, CONTACT_ADDRESS } from "@/lib/mail";
+import { resend, FROM_ADDRESS, CONTACT_ADDRESS, contactNotificationEmail, contactAutoReplyEmail } from "@/lib/mail";
 
 const schema = z.object({
   firstName: z.string().min(1).max(100),
@@ -28,22 +28,27 @@ export async function POST(req: NextRequest) {
       data: { firstName, lastName, email, phone, studentName, desiredCourse, message },
     });
 
-    await resend.emails.send({
+    const notification = contactNotificationEmail({ firstName, lastName, email, phone, studentName, desiredCourse, message });
+    const autoReply = contactAutoReplyEmail(firstName);
+
+    const notifResult = await resend.emails.send({
       from: FROM_ADDRESS,
       to: CONTACT_ADDRESS,
       replyTo: email,
       subject: `New enquiry from ${firstName} ${lastName}`,
-      text: [
-        `Name: ${firstName} ${lastName}`,
-        `Email: ${email}`,
-        phone ? `Phone: ${phone}` : null,
-        studentName ? `Child's name: ${studentName}` : null,
-        desiredCourse ? `Programme: ${desiredCourse}` : null,
-        `\nMessage:\n${message}`,
-      ]
-        .filter(Boolean)
-        .join("\n"),
+      html: notification.html,
+      text: notification.text,
     });
+    console.log("[contact] notification result:", JSON.stringify(notifResult));
+
+    const autoReplyResult = await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: email,
+      subject: "We've received your enquiry — Brilliant Tutors Academy",
+      html: autoReply.html,
+      text: autoReply.text,
+    });
+    console.log("[contact] auto-reply result:", JSON.stringify(autoReplyResult));
 
     return NextResponse.json({ ok: true });
   } catch (err) {

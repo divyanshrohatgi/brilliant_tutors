@@ -21,9 +21,9 @@ export default function HomePage() {
       <Hero />
       <StatsStrip />
       <SchoolLogos />
+      <CoursesCTA />
       <HowItWorks />
       <Testimonials />
-      <CoursesCTA />
       <AssessmentBanner />
       <section id="contact" className="py-20 bg-white" aria-labelledby="contact-heading">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
