@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Courses", href: "/courses" },
   { label: "GCSE", href: "/gcse" },
   { label: "Mock Exams", href: "/mock-exams" },
+  { label: "Timetable", href: "/timetable" },
   { label: "Shop", href: "/shop" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/#contact" },
@@ -73,6 +74,13 @@ export function Navbar() {
               </span>
             )}
           </Link>
+          <Link
+            href="/#contact"
+            className="hidden lg:inline-flex items-center px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-full hover:bg-primary/90 transition-colors min-h-[44px]"
+          >
+            Claim your free assessment
+          </Link>
+
           {!isSignedIn ? (
             <>
               <Link
@@ -80,12 +88,6 @@ export function Navbar() {
                 className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-primary border border-primary rounded-md hover:bg-primary hover:text-white transition-colors min-h-[44px]"
               >
                 Sign in
-              </Link>
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors min-h-[44px]"
-              >
-                Get started
               </Link>
             </>
           ) : (
@@ -138,6 +140,13 @@ export function Navbar() {
               </li>
             ))}
             <li className="pt-2 border-t border-border">
+              <Link
+                href="/#contact"
+                className="block px-3 py-3 text-sm font-bold text-white bg-primary rounded-full text-center mb-2"
+                onClick={() => setMobileOpen(false)}
+              >
+                Claim your free assessment
+              </Link>
               {!isSignedIn ? (
                 <Link
                   href="/sign-in"

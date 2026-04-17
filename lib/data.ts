@@ -1,27 +1,38 @@
 export const testimonials = [
   {
+    firstName: "Sarah",
+    author: "Sarah M., Earley",
+    date: "March 2024",
     quote:
-      "My daughter passed her Kendrick entrance exam after just one year with Brilliant Tutors. The structured approach and mock exams were invaluable.",
-    author: "Sarah M.",
-    detail: "Parent of Year 6 pupil, Earley",
+      "My daughter passed her Kendrick entrance exam after just one year with Brilliant Tutors. The structured approach and regular mock exams made all the difference — she walked in on the day feeling genuinely prepared.",
   },
   {
+    firstName: "James",
+    author: "James T., Caversham",
+    date: "January 2024",
     quote:
-      "We tried two other tutoring centres before finding Brilliant Tutors. The difference in our son's confidence and results was immediate.",
-    author: "James T.",
-    detail: "Parent of Year 5 pupil, Caversham",
+      "We tried two other tutoring centres before finding Brilliant Tutors. The difference in our son's confidence and results was immediate. He secured a place at Reading School and we couldn't be happier.",
   },
   {
+    firstName: "Priya",
+    author: "Priya K., Reading",
+    date: "November 2023",
     quote:
-      "Brilliant Tutors helped my son achieve a Grade 8 in GCSE Maths. The tutors genuinely care about every child's progress.",
-    author: "Priya K.",
-    detail: "Parent of Year 11 pupil, Reading",
+      "Brilliant Tutors helped my son achieve a Grade 8 in GCSE Maths. The tutors genuinely care about every child's individual progress, not just getting through the syllabus.",
   },
   {
+    firstName: "Helen",
+    author: "Helen R., Slough",
+    date: "October 2023",
     quote:
-      "The mock exams are the best preparation you can get. Our daughter knew exactly what to expect on the day — no surprises.",
-    author: "Mark & Helen R.",
-    detail: "Parents of Year 6 pupil, Slough",
+      "The 11+ mock exams are the best preparation you can get. Our daughter knew exactly what to expect on the day — the format, the timing, the pressure. No surprises, just confidence.",
+  },
+  {
+    firstName: "Amir",
+    author: "Amir P., Reading",
+    date: "September 2023",
+    quote:
+      "From Year 4 through to the 11+ exam, Brilliant Tutors were with us every step of the way. My son earned a place at the FSCE Grammar and the tutors were as proud as we were.",
   },
 ] as const;
 

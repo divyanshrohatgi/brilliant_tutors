@@ -28,7 +28,16 @@ export default async function AccountPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-bold text-primary mb-8">My account</h1>
+      <div className="flex items-center gap-4 mb-8">
+        <h1 className="text-3xl font-bold text-primary">My account</h1>
+        <img
+          src="https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_48/brilliant-tutors/logo"
+          alt="Brilliant Tutors Academy"
+          width={48}
+          height={48}
+          className="opacity-80"
+        />
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
         {accountLinks.map(({ label, desc, href }) => (

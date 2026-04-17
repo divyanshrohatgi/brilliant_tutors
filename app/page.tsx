@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
+import { StatsStrip } from "@/components/home/StatsStrip";
 import { SchoolLogos } from "@/components/home/SchoolLogos";
+import { HowItWorks } from "@/components/home/HowItWorks";
 import { CoursesCTA } from "@/components/home/CoursesCTA";
-import { WeeklySchedule } from "@/components/home/WeeklySchedule";
+import { AssessmentBanner } from "@/components/home/AssessmentBanner";
 import { Testimonials } from "@/components/home/Testimonials";
 import { ContactForm } from "@/components/shared/ContactForm";
 
@@ -17,18 +19,20 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <StatsStrip />
       <SchoolLogos />
-      <CoursesCTA />
-      <WeeklySchedule />
+      <HowItWorks />
       <Testimonials />
-
-      <section id="contact" className="py-16 bg-white" aria-labelledby="contact-heading">
+      <CoursesCTA />
+      <AssessmentBanner />
+      <section id="contact" className="py-20 bg-white" aria-labelledby="contact-heading">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 id="contact-heading" className="text-3xl font-bold text-primary mb-3">
-              Get in touch
+            <p className="text-accent font-semibold text-xs uppercase tracking-widest mb-3">Get in touch</p>
+            <h2 id="contact-heading" className="text-3xl font-extrabold text-primary tracking-tight mb-3">
+              We&apos;d love to hear from you
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground leading-7">
               Questions about a programme? Not sure which year group to enrol in?
               We&apos;re happy to help — we reply within one working day.
             </p>

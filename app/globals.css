@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -47,6 +48,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --font-sans: var(--font-plus-jakarta-sans);
+  --font-serif: var(--font-fraunces);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -64,6 +66,14 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Serif headings scoped to blog articles only */
+.blog-article h1,
+.blog-article h2,
+.blog-article h3,
+.blog-article h4 {
+  font-family: var(--font-fraunces), Georgia, serif;
 }
 
 @media (prefers-reduced-motion: reduce) {

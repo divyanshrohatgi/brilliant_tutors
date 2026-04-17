@@ -34,6 +34,16 @@ export function Footer() {
               <GraduationCap className="h-7 w-7 text-accent" aria-hidden="true" />
               <span>Brilliant Tutors</span>
             </Link>
+
+            {/* Official badge */}
+            <img
+              src="https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_100/brilliant-tutors/logo"
+              alt="Brilliant Tutors Academy official badge"
+              width={100}
+              height={100}
+              className="mb-5"
+            />
+
             <p className="text-sm text-primary-foreground/70 mb-4 leading-relaxed">
               Expert 11+ and GCSE tutoring in Reading, Berkshire. Centres in Earley,
               Caversham and Slough.

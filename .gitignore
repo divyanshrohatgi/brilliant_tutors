@@ -45,3 +45,16 @@ next-env.d.ts
 # project files
 spec.md
 .claude/
+
+# images
+/images/
+/public/images/
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.webp
+**/*.avif
+**/*.gif
+
+# blog content
+/content/

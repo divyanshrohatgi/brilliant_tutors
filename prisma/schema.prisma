@@ -169,6 +169,35 @@ model PromoCode {
   orders Order[]
 }
 
+model PostStats {
+  slug      String     @id
+  views     Int        @default(0)
+  likes     PostLike[]
+  savedBy   SavedPost[]
+}
+
+model PostLike {
+  id        String    @id @default(cuid())
+  postSlug  String
+  sessionId String
+  createdAt DateTime  @default(now())
+
+  post PostStats @relation(fields: [postSlug], references: [slug], onDelete: Cascade)
+
+  @@unique([postSlug, sessionId])
+}
+
+model SavedPost {
+  id        String    @id @default(cuid())
+  postSlug  String
+  userId    String
+  createdAt DateTime  @default(now())
+
+  post PostStats @relation(fields: [postSlug], references: [slug], onDelete: Cascade)
+
+  @@unique([postSlug, userId])
+}
+
 model ContactSubmission {
   id            String   @id @default(cuid())
   firstName     String
