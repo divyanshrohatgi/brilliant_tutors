@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth, UserButton } from "@clerk/nextjs";
-import { Menu, X, GraduationCap } from "lucide-react";
+import { Menu, X, GraduationCap, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -18,8 +18,21 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
+
+  useEffect(() => {
+    function refreshCart() {
+      fetch("/api/cart")
+        .then((r) => r.json())
+        .then((data) => setCartCount(data.items?.length ?? 0))
+        .catch(() => null);
+    }
+    refreshCart();
+    window.addEventListener("cart-updated", refreshCart);
+    return () => window.removeEventListener("cart-updated", refreshCart);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border">
@@ -52,6 +65,14 @@ export function Navbar() {
         </ul>
 
         <div className="flex items-center gap-3">
+          <Link href="/cart" className="relative inline-flex items-center justify-center p-2 text-muted-foreground hover:text-primary transition-colors min-h-[44px] min-w-[44px]" aria-label="Cart">
+            <ShoppingCart className="h-5 w-5" />
+            {cartCount > 0 && (
+              <span className="absolute top-1 right-1 bg-accent text-accent-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                {cartCount}
+              </span>
+            )}
+          </Link>
           {!isSignedIn ? (
             <>
               <Link
