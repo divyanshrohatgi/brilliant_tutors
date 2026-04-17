@@ -1,0 +1,143 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useAuth, UserButton } from "@clerk/nextjs";
+import { Menu, X, GraduationCap } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const navLinks = [
+  { label: "Courses", href: "/courses" },
+  { label: "GCSE", href: "/gcse" },
+  { label: "Mock Exams", href: "/mock-exams" },
+  { label: "Shop", href: "/shop" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/#contact" },
+];
+
+export function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const { isSignedIn } = useAuth();
+
+  return (
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border">
+      <nav
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16"
+        aria-label="Main navigation"
+      >
+        <Link href="/" className="flex items-center gap-2 font-bold text-primary text-lg shrink-0">
+          <GraduationCap className="h-7 w-7 text-accent" aria-hidden="true" />
+          <span>Brilliant Tutors</span>
+        </Link>
+
+        {/* Desktop nav */}
+        <ul className="hidden lg:flex items-center gap-1" role="list">
+          {navLinks.map(({ label, href }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className={cn(
+                  "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  pathname === href
+                    ? "text-primary bg-muted"
+                    : "text-muted-foreground hover:text-primary hover:bg-muted"
+                )}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center gap-3">
+          {!isSignedIn ? (
+            <>
+              <Link
+                href="/sign-in"
+                className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-primary border border-primary rounded-md hover:bg-primary hover:text-white transition-colors min-h-[44px]"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors min-h-[44px]"
+              >
+                Get started
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/account"
+                className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors min-h-[44px]"
+              >
+                My account
+              </Link>
+              <UserButton />
+            </>
+          )}
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-muted min-h-[44px] min-w-[44px]"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileOpen((prev) => !prev)}
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div
+          id="mobile-menu"
+          className="lg:hidden border-t border-border bg-white"
+        >
+          <ul className="px-4 py-3 space-y-1" role="list">
+            {navLinks.map(({ label, href }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={cn(
+                    "block px-3 py-3 rounded-md text-sm font-medium transition-colors",
+                    pathname === href
+                      ? "text-primary bg-muted"
+                      : "text-muted-foreground hover:text-primary hover:bg-muted"
+                  )}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+            <li className="pt-2 border-t border-border">
+              {!isSignedIn ? (
+                <Link
+                  href="/sign-in"
+                  className="block px-3 py-3 text-sm font-medium text-primary hover:bg-muted rounded-md"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Sign in
+                </Link>
+              ) : (
+                <Link
+                  href="/account"
+                  className="block px-3 py-3 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-md"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  My account
+                </Link>
+              )}
+            </li>
+          </ul>
+        </div>
+      )}
+    </header>
+  );
+}
