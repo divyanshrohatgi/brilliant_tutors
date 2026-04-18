@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "My account",
@@ -20,70 +21,110 @@ export default async function AccountPage() {
       orders: {
         where: { status: "PAID" },
         orderBy: { createdAt: "desc" },
-        take: 5,
+        take: 3,
         include: { items: { include: { product: true } } },
       },
+      bookings: { select: { id: true } },
     },
   });
 
-  return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex items-center gap-4 mb-8">
-        <h1 className="text-3xl font-bold text-primary">My account</h1>
-        <img
-          src="https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_48/brilliant-tutors/logo"
-          alt="Brilliant Tutors Academy"
-          width={48}
-          height={48}
-          className="opacity-80"
-        />
-      </div>
+  const savedCount = user
+    ? await db.savedPost.count({ where: { userId: user.id } })
+    : 0;
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
-        {accountLinks.map(({ label, desc, href }) => (
+  const stats = [
+    { label: "Bookings", value: user?.bookings.length ?? 0, href: "/account/bookings" },
+    { label: "Orders", value: user?.orders.length ?? 0, href: "/account/orders" },
+    { label: "Saved articles", value: savedCount, href: "/account/saved" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Stats strip */}
+      <div className="bg-white rounded-xl border border-border divide-x divide-border flex overflow-hidden">
+        {stats.map(({ label, value, href }) => (
           <Link
             key={href}
             href={href}
-            className="bg-muted rounded-xl border border-border p-6 hover:border-accent transition-colors"
+            className="group flex-1 px-6 py-5 hover:bg-muted/40 transition-colors"
           >
-            <p className="font-semibold text-primary mb-1">{label}</p>
-            <p className="text-sm text-muted-foreground">{desc}</p>
+            <p className="text-3xl font-extrabold text-primary tabular-nums">{value}</p>
+            <p className="text-sm text-muted-foreground mt-0.5 group-hover:text-primary transition-colors">{label}</p>
           </Link>
         ))}
       </div>
 
-      <section aria-labelledby="recent-orders-heading">
-        <h2 id="recent-orders-heading" className="text-xl font-bold text-primary mb-4">
-          Recent orders
-        </h2>
+      {/* Recent orders */}
+      <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h2 className="font-bold text-primary">Recent orders</h2>
+          <Link href="/account/orders" className="text-xs font-semibold text-accent hover:underline underline-offset-4">
+            View all →
+          </Link>
+        </div>
+
         {!user?.orders.length ? (
-          <p className="text-muted-foreground text-sm">No orders yet.</p>
+          <div className="px-6 py-10 text-center">
+            <p className="text-muted-foreground text-sm mb-4">No orders yet.</p>
+            <Link
+              href="/shop"
+              className="inline-flex items-center px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Browse courses
+            </Link>
+          </div>
         ) : (
-          <ul className="space-y-4" role="list">
-            {user.orders.map((order) => (
-              <li key={order.id} className="bg-white rounded-xl border border-border p-6">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="font-semibold text-primary">
-                      {order.items.map((i) => i.product.name).join(", ")}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {formatDate(order.createdAt)}
-                    </p>
-                  </div>
-                  <p className="font-semibold text-primary">{formatPrice(order.total)}</p>
+          <ul role="list">
+            {user.orders.map((order, i) => (
+              <li
+                key={order.id}
+                className={`flex items-center justify-between gap-4 px-6 py-4 ${
+                  i < user.orders.length - 1 ? "border-b border-border" : ""
+                }`}
+              >
+                <div className="min-w-0">
+                  <p className="font-medium text-primary text-sm truncate">
+                    {order.items.map((item) => item.product.name).join(", ")}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{formatDate(order.createdAt)}</p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">
+                    Paid
+                  </span>
+                  <span className="font-semibold text-primary text-sm">{formatPrice(order.total)}</span>
                 </div>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </div>
+
+      {/* Quick links */}
+      <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="font-bold text-primary">Quick links</h2>
+        </div>
+        <div className="divide-y divide-border">
+          {[
+            { label: "Book a mock exam", href: "/mock-exams", desc: "Upcoming exam dates and booking" },
+            { label: "Browse courses", href: "/courses", desc: "Year 3, 4, 5 and GCSE programmes" },
+            { label: "Read the blog", href: "/blog", desc: "11+ tips, guides and exam advice" },
+          ].map(({ label, href, desc }) => (
+            <Link
+              key={href}
+              href={href}
+              className="group flex items-center justify-between gap-4 px-6 py-4 hover:bg-muted/50 transition-colors"
+            >
+              <div>
+                <p className="font-medium text-primary text-sm group-hover:text-accent transition-colors">{label}</p>
+                <p className="text-xs text-muted-foreground">{desc}</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-accent transition-colors shrink-0" />
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
-
-const accountLinks = [
-  { label: "Bookings", desc: "View your upcoming sessions", href: "/account/bookings" },
-  { label: "Orders", desc: "Your purchase history", href: "/account/orders" },
-  { label: "Settings", desc: "Manage your profile", href: "/account/settings" },
-];

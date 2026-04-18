@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
+import { CalendarCheck } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "My bookings",
+export const metadata: Metadata = { title: "My bookings" };
+
+const statusStyles: Record<string, string> = {
+  confirmed: "bg-green-100 text-green-800",
+  pending: "bg-yellow-100 text-yellow-800",
+  cancelled: "bg-muted text-muted-foreground",
 };
 
 export default async function BookingsPage() {
@@ -18,49 +24,47 @@ export default async function BookingsPage() {
   const bookings = await db.booking.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
-    include: {
-      product: true,
-      variant: true,
-    },
+    include: { product: true, variant: true },
   });
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-bold text-primary mb-8">My bookings</h1>
-
-      {!bookings.length ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="mb-4">No bookings yet.</p>
-          <a href="/shop" className="text-primary font-medium hover:underline">
-            Browse our courses →
-          </a>
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-3">
+          <CalendarCheck className="w-5 h-5 text-primary" />
+          <h1 className="font-bold text-primary text-lg">My bookings</h1>
+          <span className="ml-auto text-xs text-muted-foreground">{bookings.length} total</span>
         </div>
-      ) : (
-        <ul className="space-y-4" role="list">
-          {bookings.map((booking) => (
-            <li key={booking.id} className="bg-white rounded-xl border border-border p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="font-semibold text-primary">{booking.product.name}</p>
+
+        {!bookings.length ? (
+          <div className="px-6 py-14 text-center">
+            <p className="text-muted-foreground text-sm mb-4">No bookings yet.</p>
+            <Link
+              href="/mock-exams"
+              className="inline-flex items-center px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Book a mock exam
+            </Link>
+          </div>
+        ) : (
+          <ul role="list" className="divide-y divide-border">
+            {bookings.map((booking) => (
+              <li key={booking.id} className="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
+                <div className="min-w-0">
+                  <p className="font-semibold text-primary text-sm">{booking.product.name}</p>
                   {booking.variant && (
-                    <p className="text-sm text-muted-foreground mt-0.5">{booking.variant.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{booking.variant.name}</p>
                   )}
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Booked {formatDate(booking.createdAt)}
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">Booked {formatDate(booking.createdAt)}</p>
                 </div>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                  booking.status === "confirmed"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {booking.status}
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${statusStyles[booking.status] ?? "bg-muted text-muted-foreground"}`}>
+                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                 </span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

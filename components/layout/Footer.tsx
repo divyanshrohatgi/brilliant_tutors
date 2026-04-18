@@ -13,7 +13,7 @@ const quickLinks = [
   { label: "Shop", href: "/shop" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
-  { label: "Free Assessment", href: "/contact" },
+  { label: "Free Assessment", href: "/#contact" },
 ];
 
 const legalLinks = [

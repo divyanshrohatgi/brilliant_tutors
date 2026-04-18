@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import { UserProfile } from "@clerk/nextjs";
+import { Settings } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Account settings",
-};
+export const metadata: Metadata = { title: "Account settings" };
 
 export default function SettingsPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-bold text-primary mb-8">Account settings</h1>
-      <UserProfile />
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-3">
+          <Settings className="w-5 h-5 text-primary" />
+          <h1 className="font-bold text-primary text-lg">Account settings</h1>
+        </div>
+        <div className="p-6">
+          <UserProfile />
+        </div>
+      </div>
     </div>
   );
 }

@@ -43,7 +43,7 @@ export function AssessmentBanner() {
               ))}
             </ul>
             <Link
-              href="/contact"
+              href="/#contact"
               className="inline-flex items-center justify-center px-8 py-4 bg-accent text-accent-foreground font-bold rounded-full hover:bg-accent/90 transition-colors min-h-[52px] text-base shadow-lg"
             >
               Claim your free assessment →

@@ -83,7 +83,7 @@ export function Navbar() {
             )}
           </Link>
           <Link
-            href="/contact"
+            href="/#contact"
             className="hidden lg:inline-flex items-center px-5 py-2.5 text-sm font-bold bg-accent text-accent-foreground rounded-full hover:bg-accent/90 transition-colors min-h-[44px]"
           >
             Claim your free assessment
@@ -149,7 +149,7 @@ export function Navbar() {
             ))}
             <li className="pt-2 border-t border-border">
               <Link
-                href="/contact"
+                href="/#contact"
                 className="block px-3 py-3 text-sm font-bold text-accent-foreground bg-accent rounded-full text-center mb-2 hover:bg-accent/90 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
