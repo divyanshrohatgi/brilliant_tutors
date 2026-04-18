@@ -84,14 +84,24 @@ export async function POST(req: NextRequest) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+  let stripeCouponId: string | undefined;
+  if (promoCodeRecord && discountAmount > 0) {
+    const coupon = await stripe.coupons.create({
+      ...(promoCodeRecord.discountType === "PERCENT"
+        ? { percent_off: promoCodeRecord.discountValue }
+        : { amount_off: promoCodeRecord.discountValue, currency: "gbp" }),
+      duration: "once",
+      name: `Promo: ${parsed.data.promoCode}`,
+    });
+    stripeCouponId = coupon.id;
+  }
+
   const stripeSession = await stripe.checkout.sessions.create({
     mode: "payment",
     currency: "gbp",
     line_items: lineItems,
-    ...(discountAmount > 0 && {
-      discounts: [],
-    }),
     customer_email: user.email,
+    ...(stripeCouponId ? { discounts: [{ coupon: stripeCouponId }] } : {}),
     metadata: {
       userId: user.id,
       cartId: cart.id,
@@ -101,7 +111,7 @@ export async function POST(req: NextRequest) {
     success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/cart`,
   }, {
-    idempotencyKey: `checkout-${user.id}-${cart.id}-${Date.now()}`,
+    idempotencyKey: `checkout-cart-${cart.id}`,
   });
 
   // Create a pending order

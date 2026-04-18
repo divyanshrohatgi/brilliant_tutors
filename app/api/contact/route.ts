@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { resend, FROM_ADDRESS, CONTACT_ADDRESS, contactNotificationEmail, contactAutoReplyEmail } from "@/lib/mail";
+import { contactFormLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   firstName: z.string().min(1).max(100),
@@ -14,6 +15,12 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "anonymous";
+  const { success } = await contactFormLimit.limit(ip);
+  if (!success) {
+    return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
 
@@ -31,7 +38,7 @@ export async function POST(req: NextRequest) {
     const notification = contactNotificationEmail({ firstName, lastName, email, phone, studentName, desiredCourse, message });
     const autoReply = contactAutoReplyEmail(firstName);
 
-    const notifResult = await resend.emails.send({
+    await resend.emails.send({
       from: FROM_ADDRESS,
       to: CONTACT_ADDRESS,
       replyTo: email,
@@ -39,16 +46,14 @@ export async function POST(req: NextRequest) {
       html: notification.html,
       text: notification.text,
     });
-    console.log("[contact] notification result:", JSON.stringify(notifResult));
 
-    const autoReplyResult = await resend.emails.send({
+    await resend.emails.send({
       from: FROM_ADDRESS,
       to: email,
       subject: "We've received your enquiry — Brilliant Tutors Academy",
       html: autoReply.html,
       text: autoReply.text,
     });
-    console.log("[contact] auto-reply result:", JSON.stringify(autoReplyResult));
 
     return NextResponse.json({ ok: true });
   } catch (err) {

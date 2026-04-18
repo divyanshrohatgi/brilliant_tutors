@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth, UserButton } from "@clerk/nextjs";
-import { Menu, X, GraduationCap, ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -14,7 +15,7 @@ const navLinks = [
   { label: "Timetable", href: "/timetable" },
   { label: "Shop", href: "/shop" },
   { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function Navbar() {
@@ -41,9 +42,16 @@ export function Navbar() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16"
         aria-label="Main navigation"
       >
-        <Link href="/" className="flex items-center gap-2 font-bold text-primary text-lg shrink-0">
-          <GraduationCap className="h-7 w-7 text-accent" aria-hidden="true" />
-          <span>Brilliant Tutors</span>
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Image
+            src="https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_120/brilliant-tutors/logo"
+            alt="Brilliant Tutors Academy"
+            width={40}
+            height={40}
+            className="rounded-full"
+            priority
+          />
+          <span className="font-bold text-primary text-lg hidden sm:block">Brilliant Tutors</span>
         </Link>
 
         {/* Desktop nav */}
@@ -75,8 +83,8 @@ export function Navbar() {
             )}
           </Link>
           <Link
-            href="/#contact"
-            className="hidden lg:inline-flex items-center px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-full hover:bg-primary/90 transition-colors min-h-[44px]"
+            href="/contact"
+            className="hidden lg:inline-flex items-center px-5 py-2.5 text-sm font-bold bg-accent text-accent-foreground rounded-full hover:bg-accent/90 transition-colors min-h-[44px]"
           >
             Claim your free assessment
           </Link>
@@ -141,8 +149,8 @@ export function Navbar() {
             ))}
             <li className="pt-2 border-t border-border">
               <Link
-                href="/#contact"
-                className="block px-3 py-3 text-sm font-bold text-white bg-primary rounded-full text-center mb-2"
+                href="/contact"
+                className="block px-3 py-3 text-sm font-bold text-accent-foreground bg-accent rounded-full text-center mb-2 hover:bg-accent/90 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Claim your free assessment

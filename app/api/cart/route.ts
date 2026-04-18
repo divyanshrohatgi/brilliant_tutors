@@ -92,6 +92,20 @@ export async function DELETE(req: NextRequest) {
   const cartItemId = searchParams.get("id");
   if (!cartItemId) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-  await db.cartItem.delete({ where: { id: cartItemId } }).catch(() => null);
+  const { userId } = await auth();
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("cart_session")?.value;
+
+  const item = await db.cartItem.findUnique({ where: { id: cartItemId }, include: { cart: true } });
+  if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const cart = item.cart;
+  const isOwner = (userId && cart.userId)
+    ? (await db.user.findUnique({ where: { clerkId: userId } }))?.id === cart.userId
+    : cart.sessionId === sessionId;
+
+  if (!isOwner) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
+  await db.cartItem.delete({ where: { id: cartItemId } });
   return NextResponse.json({ ok: true });
 }

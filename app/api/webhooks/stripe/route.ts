@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!order) {
-      console.error("[stripe-webhook] Order not found for session", session.id);
+      console.warn("[stripe-webhook] Order not found for session");
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
@@ -102,9 +102,14 @@ export async function POST(req: NextRequest) {
         subject: "Your booking is confirmed — Brilliant Tutors Academy",
         html: receipt.html,
         text: receipt.text,
-      }).catch((err) => console.error("[stripe-webhook] Failed to send receipt:", err));
+      }).catch(() => console.warn("[stripe-webhook] Failed to send receipt email"));
     }
   }
 
   return NextResponse.json({ ok: true });
+}
+    }
+  }
+
+return NextResponse.json({ ok: true });
 }

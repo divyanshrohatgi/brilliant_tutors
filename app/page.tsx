@@ -30,14 +30,13 @@ export default function HomePage() {
           <div className="text-center mb-10">
             <p className="text-accent font-semibold text-xs uppercase tracking-widest mb-3">Get in touch</p>
             <h2 id="contact-heading" className="text-3xl font-extrabold text-primary tracking-tight mb-3">
-              We&apos;d love to hear from you
+              Book Your Free Assessment
             </h2>
             <p className="text-muted-foreground leading-7">
-              Questions about a programme? Not sure which year group to enrol in?
-              We&apos;re happy to help — we reply within one working day.
+              Not sure which programme is right for your child? Book a free assessment and we&apos;ll identify exactly where they are and what they need.
             </p>
           </div>
-          <ContactForm />
+          <ContactForm submitLabel="Book Free Assessment" />
         </div>
       </section>
     </>

@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("[clerk-webhook]", event.type, err);
+    console.warn("[clerk-webhook] DB error handling", event.type);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }

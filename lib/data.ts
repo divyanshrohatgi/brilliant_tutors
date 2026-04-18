@@ -76,12 +76,11 @@ export const programmes = [
 ] as const;
 
 export const targetSchools = [
-  "Kendrick School",
   "Reading School",
-  "Abbey School",
-  "Holyport College",
-  "FSCE Grammar",
-  "Upton Court Grammar",
-  "Slough Grammar",
-  "Chesham Grammar",
+  "Kendrick School",
+  "Queen Anne's",
+  "Slough Consortium",
+  "Gloucester",
+  "Sutton Grammar",
+  "Wilson's School",
 ] as const;

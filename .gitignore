@@ -45,6 +45,7 @@ next-env.d.ts
 # project files
 spec.md
 .claude/
+*.txt
 
 # images
 /images/
