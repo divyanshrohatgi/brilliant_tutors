@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.$transaction(async (tx: any) => {
       await tx.order.update({
         where: { id: order.id },
@@ -97,6 +98,7 @@ export async function POST(req: NextRequest) {
       const receipt = paymentReceiptEmail({
         firstName,
         orderId: order.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items: order.items.map((item: any) => ({
           name: item.product.name,
           variant: item.variant?.name ?? null,
