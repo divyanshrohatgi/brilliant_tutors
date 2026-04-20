@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/shared/ContactForm";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 export const metadata: Metadata = {
   title: "11+ Tutor Earley | 11+ Preparation Earley Reading",
@@ -8,9 +9,21 @@ export const metadata: Metadata = {
   alternates: { canonical: "/11-plus-tutor-earley" },
 };
 
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "@id": "https://brilliant-tutors.co.uk/11-plus-tutor-earley/#localbusiness",
+  parentOrganization: { "@id": "https://brilliant-tutors.co.uk/#organization" },
+  areaServed: { "@type": "City", name: "Earley" },
+};
+
 export default function EarleyPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(localBusinessJsonLd) }}
+      />
       <section className="bg-primary text-primary-foreground py-16 px-4">
         <div className="max-w-3xl mx-auto">
           <p className="text-accent font-semibold text-sm uppercase tracking-widest mb-3">Earley, Reading</p>

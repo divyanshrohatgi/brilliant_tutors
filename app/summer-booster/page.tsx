@@ -4,12 +4,20 @@ import { db } from "@/lib/db";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { ContactForm } from "@/components/shared/ContactForm";
 import { Clock, CalendarDays, Zap } from "lucide-react";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 export const metadata: Metadata = {
-  title: "Summer Booster Course 2025 | 11+ Intensive in Reading",
+  title: "Summer Booster Course | 11+ Intensive in Reading",
   description:
     "7-day intensive 11+ summer booster course in Reading. English, Maths, VR, NVR and Creative Writing. 21 hours of expert teaching plus 2 free mock exams. July–August 2025.",
   alternates: { canonical: "/summer-booster" },
+  openGraph: {
+    images: [{
+      url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_1200/brilliant-tutors/summer_booster_4",
+      width: 1200,
+      height: 630,
+    }],
+  },
 };
 
 const features = [
@@ -35,17 +43,19 @@ const features = [
   },
 ];
 
+const COURSE_DATES = "27th July – 3rd August 2025";
+
 const groups = [
   {
     label: "Group 1",
-    dates: "27th July – 3rd August 2025",
+    dates: COURSE_DATES,
     time: "10:00 am – 1:00 pm",
     format: "Classroom",
     color: "#dc2626",
   },
   {
     label: "Group 2",
-    dates: "27th July – 3rd August 2025",
+    dates: COURSE_DATES,
     time: "2:00 pm – 5:00 pm",
     format: "Classroom",
     color: "#1A3EBF",
@@ -62,8 +72,36 @@ export default async function SummerBoosterPage() {
     include: { variants: { select: { stock: true } } },
   });
 
+  const eventJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationEvent",
+    name: "Summer Booster Course",
+    startDate: "2025-07-27",
+    endDate: "2025-08-03",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: "Brilliant Tutors Academy",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Reading",
+        addressRegion: "Berkshire",
+        addressCountry: "GB",
+      },
+    },
+    organizer: { "@id": "https://brilliant-tutors.co.uk/#organization" },
+    offers: {
+      "@type": "Offer",
+      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://brilliant-tutors.co.uk"}/summer-booster`,
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(eventJsonLd) }}
+      />
       {/* ── Hero ── */}
       <section
         className="relative overflow-hidden py-20 text-white"
@@ -227,7 +265,7 @@ export default async function SummerBoosterPage() {
                 </div>
                 <div className="bg-amber-50 border border-amber-100 px-7 py-6 space-y-4">
                   {[
-                    ["7 days", "27th July – 3rd August"],
+                    ["7 days", COURSE_DATES],
                     ["21 hours", "of expert teaching"],
                     ["5 subjects", "English, Maths, VR, NVR, CW"],
                     ["2 mock exams", "GL or FSCE, included free"],

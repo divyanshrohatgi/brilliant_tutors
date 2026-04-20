@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   description:
     "Realistic GL and FSCE 11+ mock exams in Reading and Berkshire. Timed conditions, full written feedback and school-specific preparation at Brilliant Tutors Academy.",
   alternates: { canonical: "/mock-exams" },
+  openGraph: {
+    images: [{
+      url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_1200/brilliant-tutors/logo",
+      width: 1200,
+      height: 630,
+    }],
+  },
 };
 
 const steps = [

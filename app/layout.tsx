@@ -42,11 +42,52 @@ export const metadata: Metadata = {
   },
 };
 
+import { safeJsonLdString } from "@/lib/jsonLd";
+
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "EducationalOrganization",
+      "@id": "https://brilliant-tutors.co.uk/#organization",
+      name: "Brilliant Tutors Academy",
+      url: "https://brilliant-tutors.co.uk",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_80/brilliant-tutors/logo",
+      },
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Earley Business Centre, 459 Wokingham Road",
+        addressLocality: "Reading",
+        addressRegion: "Berkshire",
+        postalCode: "RG6 7HU",
+        addressCountry: "GB",
+      },
+      sameAs: [
+        "https://www.facebook.com/BTAcademyUK/",
+        "https://www.linkedin.com/company/brilliant-tutors-academy/",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://brilliant-tutors.co.uk/#website",
+      url: "https://brilliant-tutors.co.uk",
+      name: "Brilliant Tutors Academy",
+      publisher: { "@id": "https://brilliant-tutors.co.uk/#organization" },
+    },
+  ],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
       <html lang="en-GB" className={`${plusJakartaSans.variable} ${fraunces.variable}`}>
         <body className="antialiased min-h-screen flex flex-col">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: safeJsonLdString(orgJsonLd) }}
+          />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

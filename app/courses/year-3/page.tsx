@@ -1,17 +1,38 @@
 import type { Metadata } from "next";
 import { CoursePage } from "@/components/shared/CoursePage";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 export const metadata: Metadata = {
   title: "Year 3 11+ Tuition in Reading",
   description:
     "Early 11+ foundation for Year 3 pupils in Reading and Berkshire. English, Maths and Non-Verbal Reasoning at Brilliant Tutors Academy.",
   alternates: { canonical: "/courses/year-3" },
+  openGraph: {
+    images: [{
+      url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_1200/brilliant-tutors/lvl3",
+      width: 1200,
+      height: 630,
+    }],
+  },
+};
+
+const courseJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Year 3 — Full 11+ Preparation",
+  description: "Early 11+ foundation for Year 3 pupils in Reading and Berkshire. English, Maths and Non-Verbal Reasoning.",
+  provider: { "@id": "https://brilliant-tutors.co.uk/#organization" },
 };
 
 export default function Year3Page() {
   return (
-    <CoursePage
-      tag="Ages 7–8 · Early Foundation"
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(courseJsonLd) }}
+      />
+      <CoursePage
+        tag="Ages 7–8 · Early Foundation"
       title="Year 3 — Full 11+ Preparation"
       intro="Starting early can make all the difference. We work with young students to build foundational skills in a way that sets them up for success — without the pressure."
       details={[
@@ -84,5 +105,6 @@ export default function Year3Page() {
       ]}
       next={{ label: "Year 4 courses", href: "/courses/year-4" }}
     />
+    </>
   );
 }

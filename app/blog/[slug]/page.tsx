@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 import { getAllPosts, getPost, getPostsByCategory, extractHeadings } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 import { PostActions } from "@/components/blog/PostActions";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://brilliant-tutors.co.uk";
+
+const resolveImageUrl = (src: string) =>
+  src.startsWith("http") ? src : `${siteUrl}${src}`;
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -24,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonical = post.canonical ?? url;
 
   return {
-    title: `${post.title} | Brilliant Tutors`,
+    title: post.title,
     description: post.description,
     alternates: { canonical },
     openGraph: {
@@ -35,14 +41,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: [post.author],
       images: post.cover
-        ? [{ url: `${siteUrl}${post.cover}`, width: 1200, height: 630, alt: post.title }]
+        ? [{ url: resolveImageUrl(post.cover), width: 1200, height: 630, alt: post.title }]
         : [],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: post.cover ? [`${siteUrl}${post.cover}`] : [],
+      images: post.cover ? [resolveImageUrl(post.cover)] : [],
     },
   };
 }
@@ -71,22 +77,29 @@ export default async function BlogPostPage({ params }: Props) {
   const headings = extractHeadings(post.content);
   const related = getPostsByCategory(post.category, slug).slice(0, 3);
   const url = `${siteUrl}/blog/${slug}`;
+  const canonical = post.canonical ?? url;
 
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
-    image: post.cover ? `${siteUrl}${post.cover}` : undefined,
+    image: post.cover
+      ? {
+          "@type": "ImageObject",
+          url: resolveImageUrl(post.cover),
+          width: 1200,
+          height: 630,
+        }
+      : undefined,
     datePublished: post.date,
-    dateModified: post.date,
     author: { "@type": "Person", name: post.author },
     publisher: {
       "@type": "Organization",
       name: "Brilliant Tutors Academy",
       logo: { "@type": "ImageObject", url: `${siteUrl}/images/logo.png` },
     },
-    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   };
 
   const breadcrumbJsonLd = {
@@ -95,8 +108,7 @@ export default async function BlogPostPage({ params }: Props) {
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
       { "@type": "ListItem", position: 2, name: "Blog", item: `${siteUrl}/blog` },
-      { "@type": "ListItem", position: 3, name: post.category, item: `${siteUrl}/blog?category=${encodeURIComponent(post.category)}` },
-      { "@type": "ListItem", position: 4, name: post.title, item: url },
+      { "@type": "ListItem", position: 3, name: post.title, item: canonical },
     ],
   };
 
@@ -104,11 +116,11 @@ export default async function BlogPostPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(articleJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(breadcrumbJsonLd) }}
       />
 
       <div className="bg-white min-h-screen">
@@ -137,12 +149,14 @@ export default async function BlogPostPage({ params }: Props) {
             <main>
               {/* Cover image */}
               {post.cover && (
-                <div className="w-full overflow-hidden rounded-2xl mb-8" style={{ height: 360 }}>
-                  <img
+                <div className="w-full overflow-hidden rounded-2xl mb-8" style={{ aspectRatio: "16/9", position: "relative" }}>
+                  <Image
                     src={post.cover}
                     alt={post.title}
-                    className="w-full h-full object-cover"
-                    loading="eager"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 900px"
+                    className="object-cover"
+                    priority
                   />
                 </div>
               )}
@@ -169,7 +183,7 @@ export default async function BlogPostPage({ params }: Props) {
               <article className="prose prose-neutral max-w-none prose-headings:text-primary prose-headings:font-semibold prose-a:text-accent prose-a:no-underline hover:prose-a:underline prose-strong:text-primary prose-li:text-muted-foreground prose-p:text-muted-foreground prose-p:leading-7 blog-article">
                 <MDXRemote
                   source={post.content}
-                  options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+                  options={{ mdxOptions: { remarkPlugins: [remarkGfm], rehypePlugins: [rehypeSlug] } }}
                   components={mdxComponents}
                 />
               </article>

@@ -24,7 +24,6 @@ export default async function SavedPostsPage() {
   });
 
   const allPosts = getAllPosts();
-  const slugSet = new Set(saved.map((s) => s.postSlug));
   const posts = saved
     .map((s) => allPosts.find((p) => p.slug === s.postSlug))
     .filter((p): p is NonNullable<typeof p> => p !== undefined);

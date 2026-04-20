@@ -10,7 +10,7 @@ const schema = z.object({
   parentFirstName: z.string().min(1, "Required"),
   parentLastName: z.string().min(1, "Required"),
   email: z.string().email("Enter a valid email address"),
-  mobile: z.string().regex(UK_MOBILE_RE, "Enter a valid UK mobile (07xxxxxxxxx or +447xxxxxxxxx)"),
+  mobile: z.string().transform((v) => v.replace(/\s/g, "")).pipe(z.string().regex(UK_MOBILE_RE, "Enter a valid UK mobile (07xxxxxxxxx or +447xxxxxxxxx)")),
   studentFirstName: z.string().min(1, "Required"),
   studentLastName: z.string().min(1, "Required"),
   yearGroup: z.string().min(1, "Please select a year group"),

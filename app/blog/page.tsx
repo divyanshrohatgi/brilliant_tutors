@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getAllPosts } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://brilliant-tutors.co.uk";
 
@@ -38,11 +40,26 @@ export default function BlogPage() {
     })),
   };
 
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: posts.slice(0, 10).map((post, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${siteUrl}/blog/${post.slug}`,
+      name: post.title,
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(blogJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(itemListJsonLd) }}
       />
 
       <div className="bg-white min-h-screen">
@@ -75,11 +92,12 @@ export default function BlogPage() {
                     {/* Cover */}
                     <div className="relative w-full overflow-hidden" style={{ height: 220 }}>
                       {post.cover ? (
-                        <img
+                        <Image
                           src={post.cover}
                           alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div

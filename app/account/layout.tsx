@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { AccountNav } from "@/components/account/AccountNav";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
       <div className="bg-primary text-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center gap-4">
           {user.imageUrl ? (
-            <img
+            <Image
               src={user.imageUrl}
               alt={name}
               width={48}
@@ -36,23 +37,16 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
       {/* Body */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8 items-start">
-          {/* Sidebar */}
-          <aside className="hidden lg:block w-52 shrink-0">
-            <div className="bg-white rounded-xl border border-border p-3 sticky top-6">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+          {/* Sidebar — stacks on mobile, fixed width on desktop */}
+          <aside className="w-full lg:w-52 shrink-0">
+            <div className="bg-white rounded-xl border border-border p-3 lg:sticky lg:top-6">
               <AccountNav />
             </div>
           </aside>
 
-          {/* Mobile nav */}
-          <div className="lg:hidden w-full mb-2">
-            <div className="bg-white rounded-xl border border-border p-3">
-              <AccountNav />
-            </div>
-          </div>
-
           {/* Content */}
-          <main className="flex-1 min-w-0">
+          <main className="flex-1 min-w-0 w-full">
             {children}
           </main>
         </div>

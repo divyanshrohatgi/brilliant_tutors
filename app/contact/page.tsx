@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { ContactForm } from "@/components/shared/ContactForm";
 import { CentreMap } from "@/components/contact/CentreMap";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 export const metadata: Metadata = {
   title: "Contact Us | Brilliant Tutors Academy",
@@ -45,9 +46,51 @@ const centres = [
   },
 ];
 
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "@id": "https://brilliant-tutors.co.uk/#localbusiness",
+  name: "Brilliant Tutors Academy",
+  description: "11+ and GCSE tuition centre in Reading, Berkshire",
+  url: "https://brilliant-tutors.co.uk/contact",
+  telephone: "01184 050184",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Earley Business Centre, 459 Wokingham Road",
+    addressLocality: "Earley, Reading",
+    addressRegion: "Berkshire",
+    postalCode: "RG6 7HU",
+    addressCountry: "GB",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 51.454,
+    longitude: -0.974,
+  },
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "15:30",
+      closes: "20:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: "Saturday",
+      opens: "08:30",
+      closes: "13:00"
+    }
+  ],
+  priceRange: "$$",
+};
+
 export default function ContactPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(localBusinessJsonLd) }}
+      />
       {/* Hero */}
       <section
         className="py-14 sm:py-20 px-4 text-primary-foreground"

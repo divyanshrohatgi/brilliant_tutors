@@ -4,17 +4,37 @@ import Image from "next/image";
 import { db } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import { VariantSelector } from "@/components/shop/VariantSelector";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const products = await db.product.findMany({
+    where: { isActive: true },
+    select: { slug: true },
+  });
+  return products.map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await db.product.findUnique({ where: { slug } });
   if (!product) return {};
+
+  const ogImage = product.images[0]
+    ? { url: product.images[0], width: 1200, height: 630, alt: product.name }
+    : undefined;
+
   return {
     title: product.name,
     description: product.description,
     alternates: { canonical: `/shop/${slug}` },
+    openGraph: {
+      type: "website",
+      title: product.name,
+      description: product.description,
+      ...(ogImage ? { images: [ogImage] } : {}),
+    },
   };
 }
 
@@ -32,8 +52,29 @@ export default async function ProductPage({ params }: Props) {
   const displayPrice = salePrice ?? basePrice;
   const isOnSale = !!salePrice && salePrice < basePrice;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    image: images[0] ?? undefined,
+    description,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "GBP",
+      price: (displayPrice / 100).toFixed(2),
+      availability: variants.some((v) => v.stock > 0)
+        ? "https://schema.org/InStock"
+        : "https://schema.org/SoldOut",
+    },
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(jsonLd) }}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Image */}
         <div className="relative aspect-video rounded-2xl overflow-hidden bg-muted">

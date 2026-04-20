@@ -1,17 +1,38 @@
 import type { Metadata } from "next";
 import { CoursePage } from "@/components/shared/CoursePage";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 export const metadata: Metadata = {
   title: "Year 5 11+ Preparation in Reading | Earley & Caversham",
   description:
     "Intensive Year 5 11+ preparation in Reading, Earley and Caversham. Weekly sessions, monthly mock exams and exam strategy for Kendrick, Reading School and FSCE.",
   alternates: { canonical: "/courses/year-5" },
+  openGraph: {
+    images: [{
+      url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_1200/brilliant-tutors/year5",
+      width: 1200,
+      height: 630,
+    }],
+  },
+};
+
+const courseJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Year 5 — Full 11+ Preparation",
+  description: "Intensive Year 5 11+ preparation in Reading, Earley and Caversham. Weekly sessions, monthly mock exams and exam strategy.",
+  provider: { "@id": "https://brilliant-tutors.co.uk/#organization" },
 };
 
 export default function Year5Page() {
   return (
-    <CoursePage
-      tag="Ages 9–10 · Most Popular"
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(courseJsonLd) }}
+      />
+      <CoursePage
+        tag="Ages 9–10 · Most Popular"
       title="Year 5 — Full 11+ Preparation"
       intro="We focus on covering all topic areas in the depth required to ensure students gain mastery. Expert tutors work with students to transfer great subject knowledge into exam performance."
       details={[
@@ -78,5 +99,6 @@ export default function Year5Page() {
       prev={{ label: "Year 4 courses", href: "/courses/year-4" }}
       next={{ label: "Mock exams", href: "/mock-exams" }}
     />
+    </>
   );
 }

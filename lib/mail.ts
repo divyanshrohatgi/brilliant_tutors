@@ -12,6 +12,17 @@ export const FROM_ADDRESS = process.env.NODE_ENV === "production"
 export const CONTACT_ADDRESS = process.env.ADMIN_EMAIL ?? "contact@brilliant-tutors.co.uk";
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://brilliant-tutors.co.uk";
 
+// ─── HTML escape — prevents injection in admin email templates ─────────────────
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // ─── Shared layout ─────────────────────────────────────────────────────────────
 
 function layout(body: string) {
@@ -71,22 +82,29 @@ export function contactNotificationEmail(data: {
   firstName: string; lastName: string; email: string;
   phone?: string; studentName?: string; desiredCourse?: string; message: string;
 }) {
+  const name = `${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}`;
+  const email = escapeHtml(data.email);
+  const phone = data.phone ? escapeHtml(data.phone) : undefined;
+  const studentName = data.studentName ? escapeHtml(data.studentName) : undefined;
+  const desiredCourse = data.desiredCourse ? escapeHtml(data.desiredCourse) : undefined;
+  const message = escapeHtml(data.message);
+
   const html = layout(`
     <h2 style="margin:0 0 4px;color:#1b2b4b;font-size:20px;">New enquiry received</h2>
     <p style="margin:0 0 24px;color:#6b7280;font-size:14px;">Someone has submitted the contact form on the website.</p>
     ${divider()}
     <table cellpadding="0" cellspacing="0">
-      ${row("Name", `${data.firstName} ${data.lastName}`)}
-      ${row("Email", `<a href="mailto:${data.email}" style="color:#f5a623;">${data.email}</a>`)}
-      ${data.phone ? row("Phone", data.phone) : ""}
-      ${data.studentName ? row("Child's name", data.studentName) : ""}
-      ${data.desiredCourse ? row("Programme", data.desiredCourse) : ""}
+      ${row("Name", name)}
+      ${row("Email", `<a href="mailto:${email}" style="color:#f5a623;">${email}</a>`)}
+      ${phone ? row("Phone", phone) : ""}
+      ${studentName ? row("Child's name", studentName) : ""}
+      ${desiredCourse ? row("Programme", desiredCourse) : ""}
     </table>
     ${divider()}
     <p style="margin:0 0 8px;color:#1b2b4b;font-weight:700;font-size:14px;">Message</p>
-    <p style="margin:0;color:#374151;font-size:14px;line-height:1.7;white-space:pre-wrap;">${data.message}</p>
+    <p style="margin:0;color:#374151;font-size:14px;line-height:1.7;white-space:pre-wrap;">${message}</p>
     ${divider()}
-    ${btn("Reply to enquiry", `mailto:${data.email}`)}
+    ${btn("Reply to enquiry", `mailto:${email}`)}
   `);
 
   const text = [

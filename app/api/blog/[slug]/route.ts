@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
+import { blogViewLimit } from "@/lib/rate-limit";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -49,9 +50,17 @@ export async function POST(req: NextRequest, { params }: Params) {
   const sessionId = getSessionId(cookieStore);
 
   if (action === "view") {
-    await upsertStats(slug);
-    await db.postStats.update({ where: { slug }, data: { views: { increment: 1 } } });
-    return NextResponse.json({ ok: true });
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "anonymous";
+    const { success } = await blogViewLimit.limit(`${ip}:${slug}`).catch(() => ({ success: true }));
+    if (success) {
+      await upsertStats(slug);
+      await db.postStats.update({ where: { slug }, data: { views: { increment: 1 } } });
+    }
+    const response = NextResponse.json({ ok: true });
+    if (!cookieStore.get("cart_session")) {
+      response.cookies.set("cart_session", sessionId, { httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
+    }
+    return response;
   }
 
   if (action === "like") {

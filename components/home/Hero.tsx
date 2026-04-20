@@ -35,27 +35,26 @@ export function Hero() {
           {/* Left column */}
           <div>
             <motion.p
-              initial={{ y: 24, opacity: 0 }}
+              initial={false}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0, ease }}
               className="text-accent font-semibold text-xs uppercase tracking-widest mb-4"
             >
-              Reading&apos;s trusted 11+ specialists
+              Help your child thrive and succeed
             </motion.p>
 
             <motion.h1
-              initial={{ y: 24, opacity: 0 }}
+              initial={false}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.1, ease }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6"
             >
-              Help your child{" "}
-              <em className="not-italic text-accent">thrive</em>{" "}
-              and succeed
+              Reading&apos;s Trusted 11+ &amp; GCSE{" "}
+              <em className="not-italic text-accent">Tutors</em>
             </motion.h1>
 
             <motion.p
-              initial={{ y: 24, opacity: 0 }}
+              initial={false}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2, ease }}
               className="text-lg text-primary-foreground/80 leading-7 mb-8 max-w-lg"
@@ -66,7 +65,7 @@ export function Hero() {
             </motion.p>
 
             <motion.div
-              initial={{ y: 24, opacity: 0 }}
+              initial={false}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3, ease }}
               className="flex flex-col sm:flex-row gap-4 mb-10"
@@ -86,7 +85,7 @@ export function Hero() {
             </motion.div>
 
             <motion.div
-              initial={{ y: 24, opacity: 0 }}
+              initial={false}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4, ease }}
               className="inline-flex items-center gap-3"
@@ -95,19 +94,20 @@ export function Hero() {
                 <span className="text-accent font-bold">500+</span>
                 <span className="text-primary-foreground/80">students placed at grammar schools</span>
               </div>
-              <img
+              <Image
                 src="https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_60/brilliant-tutors/logo"
                 alt="Brilliant Tutors Academy"
                 width={60}
                 height={60}
                 className="opacity-90"
+                priority
               />
             </motion.div>
           </div>
 
           {/* Right column — slideshow */}
           <motion.div
-            initial={{ y: 24, opacity: 0 }}
+            initial={false}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.25, ease }}
             className="hidden lg:block"

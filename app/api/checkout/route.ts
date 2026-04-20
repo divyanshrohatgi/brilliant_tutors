@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { checkoutLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   promoCode: z.string().nullable(),
@@ -16,6 +17,10 @@ export async function POST(req: NextRequest) {
 
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Sign in to checkout" }, { status: 401 });
+
+  // Rate limit by userId — 3 checkout sessions per minute
+  const { success } = await checkoutLimit.limit(userId);
+  if (!success) return NextResponse.json({ error: "Too many requests, please wait a moment" }, { status: 429 });
 
   const clerkUser = await currentUser();
   if (!clerkUser) return NextResponse.json({ error: "Sign in to checkout" }, { status: 401 });
@@ -91,6 +96,7 @@ export async function POST(req: NextRequest) {
         ? { percent_off: promoCodeRecord.discountValue }
         : { amount_off: promoCodeRecord.discountValue, currency: "gbp" }),
       duration: "once",
+      max_redemptions: 1, // Prevent the one-off coupon from being reused
       name: `Promo: ${parsed.data.promoCode}`,
     });
     stripeCouponId = coupon.id;

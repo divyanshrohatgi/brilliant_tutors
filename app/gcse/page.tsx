@@ -6,6 +6,13 @@ export const metadata: Metadata = {
   description:
     "Expert GCSE tuition in Reading for Maths, English and Science. Small groups, experienced tutors and a proven record of Grade 7+ results at Brilliant Tutors Academy.",
   alternates: { canonical: "/gcse" },
+  openGraph: {
+    images: [{
+      url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_1200/brilliant-tutors/blog5",
+      width: 1200,
+      height: 630,
+    }],
+  },
 };
 
 export default function GCSEPage() {

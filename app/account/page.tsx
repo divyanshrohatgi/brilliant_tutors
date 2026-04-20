@@ -24,17 +24,20 @@ export default async function AccountPage() {
         take: 3,
         include: { items: { include: { product: true } } },
       },
-      bookings: { select: { id: true } },
     },
   });
 
-  const savedCount = user
-    ? await db.savedPost.count({ where: { userId: user.id } })
-    : 0;
+  const [bookingsCount, ordersCount, savedCount] = user
+    ? await Promise.all([
+        db.booking.count({ where: { userId: user.id } }),
+        db.order.count({ where: { userId: user.id, status: "PAID" } }),
+        db.savedPost.count({ where: { userId: user.id } }),
+      ])
+    : [0, 0, 0];
 
   const stats = [
-    { label: "Bookings", value: user?.bookings.length ?? 0, href: "/account/bookings" },
-    { label: "Orders", value: user?.orders.length ?? 0, href: "/account/orders" },
+    { label: "Bookings", value: bookingsCount, href: "/account/bookings" },
+    { label: "Orders", value: ordersCount, href: "/account/orders" },
     { label: "Saved articles", value: savedCount, href: "/account/saved" },
   ];
 

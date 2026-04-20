@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { stripe } from "@/lib/stripe";
+import { db } from "@/lib/db";
 
 export const metadata: Metadata = { title: "Booking confirmed" };
 
@@ -8,14 +10,23 @@ type Props = { searchParams: Promise<{ session_id?: string }> };
 
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const { session_id } = await searchParams;
+  const { userId } = await auth();
 
   let customerEmail = "";
-  if (session_id) {
-    try {
-      const session = await stripe.checkout.sessions.retrieve(session_id);
-      customerEmail = session.customer_email ?? "";
-    } catch {
-      // session retrieval failing shouldn't break the success page
+
+  if (session_id && userId) {
+    // Verify the session belongs to this user before exposing any data
+    const order = await db.order.findFirst({
+      where: { stripeSessionId: session_id, user: { clerkId: userId } },
+    });
+
+    if (order) {
+      try {
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        customerEmail = session.customer_email ?? "";
+      } catch {
+        // Session retrieval failing shouldn't break the success page
+      }
     }
   }
 
@@ -49,3 +60,4 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
     </div>
   );
 }
+

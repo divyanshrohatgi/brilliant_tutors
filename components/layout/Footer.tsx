@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
@@ -39,9 +38,6 @@ function LinkedInIcon() {
 }
 
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
   return (
     <footer style={{ backgroundColor: "#0f1629" }} className="text-white mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -126,33 +122,24 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Get in touch CTA — replaces the broken newsletter form */}
           <div>
-            <h3 className="font-semibold text-xs uppercase tracking-widest text-accent mb-4">Stay Updated</h3>
-            <p className="text-sm text-white/60 mb-4 leading-relaxed">
-              Exam tips, timetable updates and course news delivered to your inbox.
+            <h3 className="font-semibold text-xs uppercase tracking-widest text-accent mb-4">Get in Touch</h3>
+            <p className="text-sm text-white/60 mb-5 leading-relaxed">
+              Have a question about our programmes? We&apos;d love to hear from you.
             </p>
-            {subscribed ? (
-              <p className="text-sm text-green-400">Thanks for subscribing!</p>
-            ) : (
-              <form onSubmit={(e) => { e.preventDefault(); if (email) setSubscribed(true); }} className="space-y-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                  className="w-full rounded-md px-3 py-2.5 text-sm bg-white/10 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-2.5 text-sm font-semibold bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
-                >
-                  Subscribe to Newsletter
-                </button>
-                <p className="text-xs text-white/40">We respect your privacy. Unsubscribe any time.</p>
-              </form>
-            )}
+            <Link
+              href="/#contact"
+              className="inline-flex items-center justify-center w-full py-3 text-sm font-semibold bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
+            >
+              Book a free assessment
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center w-full py-2.5 mt-2 text-sm font-medium text-white/60 hover:text-accent transition-colors"
+            >
+              Send us a message →
+            </Link>
           </div>
         </div>
 

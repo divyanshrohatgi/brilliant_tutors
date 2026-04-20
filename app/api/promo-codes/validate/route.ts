@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { promoLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   code: z.string().min(1).max(50),
@@ -8,6 +9,10 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "anonymous";
+  const { success } = await promoLimit.limit(ip);
+  if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid request" }, { status: 400 });

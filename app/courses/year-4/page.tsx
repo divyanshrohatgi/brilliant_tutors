@@ -1,17 +1,38 @@
 import type { Metadata } from "next";
 import { CoursePage } from "@/components/shared/CoursePage";
+import { safeJsonLdString } from "@/lib/jsonLd";
 
 export const metadata: Metadata = {
   title: "Year 4 11+ Tuition in Reading",
   description:
     "11+ preparation for Year 4 pupils in Reading and Berkshire. Verbal Reasoning, Maths and English at Brilliant Tutors Academy.",
   alternates: { canonical: "/courses/year-4" },
+  openGraph: {
+    images: [{
+      url: "https://res.cloudinary.com/dn9zmy2gk/image/upload/f_auto,q_auto,w_1200/brilliant-tutors/year4",
+      width: 1200,
+      height: 630,
+    }],
+  },
+};
+
+const courseJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Year 4 — Full 11+ Preparation",
+  description: "11+ preparation for Year 4 pupils in Reading and Berkshire. Verbal Reasoning, Maths and English.",
+  provider: { "@id": "https://brilliant-tutors.co.uk/#organization" },
 };
 
 export default function Year4Page() {
   return (
-    <CoursePage
-      tag="Ages 8–9 · Structured Preparation"
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdString(courseJsonLd) }}
+      />
+      <CoursePage
+        tag="Ages 8–9 · Structured Preparation"
       title="Year 4 — Full 11+ Preparation"
       intro="Year 4 is the perfect opportunity for students to get to grips with all the topic areas ahead of Year 5. We work with students to ensure they master every subject."
       details={[
@@ -85,5 +106,6 @@ export default function Year4Page() {
       prev={{ label: "Year 3 courses", href: "/courses/year-3" }}
       next={{ label: "Year 5 courses", href: "/courses/year-5" }}
     />
+    </>
   );
 }
