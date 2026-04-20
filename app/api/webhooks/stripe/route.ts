@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    await db.$transaction(async (tx) => {
+    await db.$transaction(async (tx: any) => {
       await tx.order.update({
         where: { id: order.id },
         data: { status: "PAID" },
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
       const receipt = paymentReceiptEmail({
         firstName,
         orderId: order.id,
-        items: order.items.map((item) => ({
+        items: order.items.map((item: any) => ({
           name: item.product.name,
           variant: item.variant?.name ?? null,
           quantity: item.quantity,

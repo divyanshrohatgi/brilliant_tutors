@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
-import type { Product } from "@/app/generated/prisma/client";
+import type { Product } from "@prisma/client";
 
 type Props = {
   product: Pick<Product, "slug" | "name" | "description" | "basePrice" | "salePrice" | "images" | "locationTags" | "inventoryBadge" | "category">;

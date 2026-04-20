@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
-import { PrismaClient, DiscountType } from "../app/generated/prisma/client";
+import { PrismaClient, DiscountType } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
 function createClient() {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { PromoCodeInput } from "@/components/shared/PromoCodeInput";
-import type { Product, ProductVariant } from "@/app/generated/prisma/client";
+import type { Product, ProductVariant } from "@prisma/client";
 
 type CartItem = {
   id: string;

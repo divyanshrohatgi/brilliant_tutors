@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { formatPrice } from "@/lib/utils";
-import type { ProductVariant } from "@/app/generated/prisma/client";
+import type { ProductVariant } from "@prisma/client";
 
 type Props = {
   variants: ProductVariant[];
