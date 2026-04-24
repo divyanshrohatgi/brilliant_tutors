@@ -122,23 +122,17 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Get in touch CTA — replaces the broken newsletter form */}
+          {/* Get in touch CTA */}
           <div>
             <h3 className="font-semibold text-xs uppercase tracking-widest text-accent mb-4">Get in Touch</h3>
             <p className="text-sm text-white/60 mb-5 leading-relaxed">
               Have a question about our programmes? We&apos;d love to hear from you.
             </p>
             <Link
-              href="/#contact"
+              href="/contact"
               className="inline-flex items-center justify-center w-full py-3 text-sm font-semibold bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
             >
-              Book a free assessment
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center w-full py-2.5 mt-2 text-sm font-medium text-white/60 hover:text-accent transition-colors"
-            >
-              Send us a message →
+              Send us a message
             </Link>
           </div>
         </div>
